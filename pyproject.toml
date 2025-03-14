@@ -1,0 +1,17 @@
+[project]
+name = "optimistix-migrad"
+version = "0.1.0"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    # basic stuff
+    "ipython",
+    "pandas",
+    # jax stuff
+    "optimistix",
+    # iminuit
+    "iminuit",
+    # pyhf stuff
+    "cabinetry",
+    "pyhf[contrib]",
+]

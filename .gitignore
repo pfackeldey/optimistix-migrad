@@ -1,0 +1,7 @@
+.ropeproject
+.ruff_cache
+.venv
+__pycache__
+bottom-squarks
+*.json
+uv.lock
