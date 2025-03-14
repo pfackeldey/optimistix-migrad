@@ -123,13 +123,28 @@ if __name__ == "__main__":
 
     nll, init_pars, data = twice_nll_init_pars_data(model, init_pars, data)
 
+    # iminuit:
     iminuit_fit = prepare_iminuit(nll, init_pars, data)
-    iminuit_runtime, iminuit_bestfit = timeit(iminuit_fit)
-    print("iminuit - runtime [s]:", iminuit_runtime)
 
+    # include compile-time by running it once
+    iminuit_runtime, iminuit_bestfit = timeit(iminuit_fit)
+    print("iminuit - runtime (with compiletime) [s]:", iminuit_runtime)
+
+    # run again with pre-compiled function
+    iminuit_runtime, iminuit_bestfit = timeit(iminuit_fit)
+    print("iminuit - runtime (without compiletime) [s]:", iminuit_runtime)
+
+
+    # optimistix.migrad:
     optimistix_migrad_fit = prepare_optimistix_migrad(nll, init_pars, data)
+
+    # include compile-time by running it once
     optimistix_migrad_runtime, optimistix_migrad_bestfit = timeit(optimistix_migrad_fit)
-    print("optimistix.migrad - runtime [s]:", optimistix_migrad_runtime)
+    print("optimistix.migrad - runtime (with compiletime) [s]:", optimistix_migrad_runtime)
+
+    # run again with pre-compiled function
+    optimistix_migrad_runtime, optimistix_migrad_bestfit = timeit(optimistix_migrad_fit)
+    print("optimistix.migrad - runtime (without compiletime) [s]:", optimistix_migrad_runtime)
 
     labels = model.config.par_names
     rel_diffs = (
@@ -138,7 +153,7 @@ if __name__ == "__main__":
         )
         * 100
     )
-    print("Difference in bestfit parameters:")
+    print("\nDifference in bestfit parameters:")
     for name, iminuit_, opt_migrad_, diff in zip(
         labels,
         iminuit_bestfit.tolist(),
@@ -150,8 +165,11 @@ if __name__ == "__main__":
         )
 
     # Output:
-    # iminuit - runtime [s]: 1.2621246670605615
-    # optimistix.migrad - runtime [s]: 0.366700749960728
+    # iminuit - runtime (with compiletime) [s]: 1.2493732079165056
+    # iminuit - runtime (without compiletime) [s]: 0.8758070830954239
+    # optimistix.migrad - runtime (with compiletime) [s]: 0.3592295419657603
+    # optimistix.migrad - runtime (without compiletime) [s]: 0.07551816699560732
+    #
     # Difference in bestfit parameters:
     #                             EG_RESOLUTION_ALL: iminuit=+0.0005 vs optimistix.migrad=+0.0005 (rel. diff=+000.0%, abs. diff=0.0000)
     #                                  EG_SCALE_ALL: iminuit=-0.0051 vs optimistix.migrad=-0.0052 (rel. diff=-000.0%, abs. diff=0.0000)
