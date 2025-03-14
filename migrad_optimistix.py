@@ -265,9 +265,22 @@ class AbstractMigrad(
             # Since we have access to the inverse hessian,
             # we can calculate the edm
             if self.use_inverse:
+                # somehow we get some outliers for bestfit if we use edm as distance measure. Is this correctly implemented?
+                # cauchy_termination seems to work better...
+
                 edm = _edm(hessian, hessian_inv, grad)
-                # https://scikit-hep.org/iminuit/reference.html#iminuit.Minuit.tol
-                terminate = edm < state.edm_max
+                # # https://scikit-hep.org/iminuit/reference.html#iminuit.Minuit.tol
+                # terminate = edm < state.edm_max
+
+                terminate = cauchy_termination(
+                    self.rtol,
+                    self.atol,
+                    self.norm,
+                    state.y_eval,
+                    y_diff,
+                    f_eval,
+                    f_diff,
+                )
             else:
                 # TODO: can we do the EDM calculation without the inverse hessian? (or how to invert?)
                 edm = state.edm_max
@@ -441,32 +454,31 @@ if __name__ == "__main__":
     # Loss on this step: 6.5, Loss on the last accepted step: 1.0
     # Loss on this step: 0.953125, Loss on the last accepted step: 1.0
     # Loss on this step: 0.7900390625, Loss on the last accepted step: 1.0
-    # Loss on this step: 1290.6124267578125, Loss on the last accepted step: 0.7900390625
-    # Loss on this step: 77.57627868652344, Loss on the last accepted step: 0.7900390625
-    # Loss on this step: 4.887993812561035, Loss on the last accepted step: 0.7900390625
-    # Loss on this step: 0.7502139806747437, Loss on the last accepted step: 0.7900390625
-    # Loss on this step: 0.6221736669540405, Loss on the last accepted step: 0.7900390625
-    # Loss on this step: 0.3893127143383026, Loss on the last accepted step: 0.6221736669540405
-    # Loss on this step: 0.6890496611595154, Loss on the last accepted step: 0.3893127143383026
-    # Loss on this step: 0.37099212408065796, Loss on the last accepted step: 0.3893127143383026
-    # Loss on this step: 0.2893729507923126, Loss on the last accepted step: 0.37099212408065796
-    # Loss on this step: 0.2323695570230484, Loss on the last accepted step: 0.2893729507923126
-    # Loss on this step: 0.14567391574382782, Loss on the last accepted step: 0.2323695570230484
-    # Loss on this step: 0.12819936871528625, Loss on the last accepted step: 0.14567391574382782
-    # Loss on this step: 0.1105511412024498, Loss on the last accepted step: 0.12819936871528625
-    # Loss on this step: 0.07677625119686127, Loss on the last accepted step: 0.1105511412024498
-    # Loss on this step: 0.041784703731536865, Loss on the last accepted step: 0.07677625119686127
-    # Loss on this step: 0.040057867765426636, Loss on the last accepted step: 0.041784703731536865
-    # Loss on this step: 0.03241683170199394, Loss on the last accepted step: 0.041784703731536865
-    # Loss on this step: 0.029232295230031013, Loss on the last accepted step: 0.03241683170199394
-    # Loss on this step: 0.01108292955905199, Loss on the last accepted step: 0.029232295230031013
-    # Loss on this step: 0.0051412079483270645, Loss on the last accepted step: 0.01108292955905199
-    # Loss on this step: 0.0014254959532991052, Loss on the last accepted step: 0.0051412079483270645
-    # Loss on this step: 0.00027292981394566596, Loss on the last accepted step: 0.0014254959532991052
-    # Loss on this step: 4.908386472379789e-05, Loss on the last accepted step: 0.00027292981394566596
-    # Loss on this step: 3.3676133170956746e-05, Loss on the last accepted step: 4.908386472379789e-05
-    # Loss on this step: 1.0731275779107818e-06, Loss on the last accepted step: 4.908386472379789e-05
-    # Loss on this step: 2.0273009937454844e-08, Loss on the last accepted step: 1.0731275779107818e-06
-    # Loss on this step: 3.1200741990033976e-10, Loss on the last accepted step: 2.0273009937454844e-08
+    # Loss on this step: 1290.612443364238, Loss on the last accepted step: 0.7900390625
+    # Loss on this step: 77.57629751585345, Loss on the last accepted step: 0.7900390625
+    # Loss on this step: 4.887994681492138, Loss on the last accepted step: 0.7900390625
+    # Loss on this step: 0.7502141266596495, Loss on the last accepted step: 0.7900390625
+    # Loss on this step: 0.6221736695061825, Loss on the last accepted step: 0.7900390625
+    # Loss on this step: 0.3893128383388806, Loss on the last accepted step: 0.6221736695061825
+    # Loss on this step: 0.6890522712028336, Loss on the last accepted step: 0.3893128383388806
+    # Loss on this step: 0.37099240650653165, Loss on the last accepted step: 0.3893128383388806
+    # Loss on this step: 0.2893730009847001, Loss on the last accepted step: 0.37099240650653165
+    # Loss on this step: 0.23237012022481404, Loss on the last accepted step: 0.2893730009847001
+    # Loss on this step: 0.14567474693844784, Loss on the last accepted step: 0.23237012022481404
+    # Loss on this step: 0.12820002781280046, Loss on the last accepted step: 0.14567474693844784
+    # Loss on this step: 0.1105530115462547, Loss on the last accepted step: 0.12820002781280046
+    # Loss on this step: 0.0767684706769693, Loss on the last accepted step: 0.1105530115462547
+    # Loss on this step: 0.041824852432252035, Loss on the last accepted step: 0.0767684706769693
+    # Loss on this step: 0.04008144957070741, Loss on the last accepted step: 0.041824852432252035
+    # Loss on this step: 0.03242225331598508, Loss on the last accepted step: 0.041824852432252035
+    # Loss on this step: 0.02923669942298027, Loss on the last accepted step: 0.03242225331598508
+    # Loss on this step: 0.011082169252583535, Loss on the last accepted step: 0.02923669942298027
+    # Loss on this step: 0.005139586112812114, Loss on the last accepted step: 0.011082169252583535
+    # Loss on this step: 0.0014244980743247939, Loss on the last accepted step: 0.005139586112812114
+    # Loss on this step: 0.00027379303786038327, Loss on the last accepted step: 0.0014244980743247939
+    # Loss on this step: 5.642814322914561e-05, Loss on the last accepted step: 0.00027379303786038327
+    # Loss on this step: 2.525443822967524e-05, Loss on the last accepted step: 5.642814322914561e-05
+    # Loss on this step: 1.990342670225858e-07, Loss on the last accepted step: 2.525443822967524e-05
+    # Loss on this step: 2.373142286943067e-09, Loss on the last accepted step: 1.990342670225858e-07
 
-    # Fitted params: {'x': Array(0.99999636, dtype=float32), 'y': Array(0.999991, dtype=float32)}
+    # Fitted params: {'x': Array(0.99995305, dtype=float64), 'y': Array(0.99990481, dtype=float64)}
