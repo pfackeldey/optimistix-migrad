@@ -93,8 +93,7 @@ def prepare_optimistix_migrad(nll, init_pars, data):
 
     # MIGRAD
     solver = Migrad(
-        rtol=TOLERANCE
-        * iminuit.Minuit.LIKELIHOOD,  # 0.5 is a factor to make it comparable
+        rtol=TOLERANCE * iminuit.Minuit.LIKELIHOOD,
         atol=1e-5,  # ignored when using edm
         use_inverse=True,
         # verbose=frozenset({"edm"}),
@@ -140,14 +139,14 @@ if __name__ == "__main__":
         * 100
     )
     print("Difference in bestfit parameters:")
-    for name, imiunit_, opt_migrad_, diff in zip(
+    for name, iminuit_, opt_migrad_, diff in zip(
         labels,
         iminuit_bestfit.tolist(),
         optimistix_migrad_bestfit.tolist(),
         rel_diffs.tolist(),
     ):
         print(
-            f"{name:>45}: iminuit={imiunit_:.4f} vs optimistix.migrad={opt_migrad_:.4f} (rel diff: {diff:.1f}%)"
+            f"{name:>45}: iminuit={iminuit_:.4f} vs optimistix.migrad={opt_migrad_:.4f} (rel diff: {diff:.1f}%)"
         )
 
     # Output:
